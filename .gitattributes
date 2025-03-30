@@ -1,2 +1,135 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 25th Anniversary</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(45deg, #1e3c72, #2a5298, #6dd5ed);
+            text-align: center;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            border-radius: 15px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0px 0px 20px #ffffff;
+            animation: glow 2s infinite alternate;
+        }
+        h1 {
+            font-size: 3em;
+            margin: 0;
+            animation: fadeIn 2s ease-in;
+            color: #ff66b2;
+            text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.8);
+        }
+        p {
+            font-size: 1.5em;
+            margin-top: 10px;
+            animation: fadeIn 2.5s ease-in;
+            color: #66ffcc;
+            text-shadow: 1px 1px 8px rgba(255, 255, 255, 0.6);
+        }
+        @keyframes glow {
+            0% { box-shadow: 0px 0px 20px #ffffff; }
+            100% { box-shadow: 0px 0px 40px #ffcc33; }
+        }
+        .heart, .confetti {
+            position: absolute;
+            animation: float 3s ease-in-out infinite;
+        }
+        .heart {
+            font-size: 2rem;
+            color: red;
+        }
+        .confetti {
+            width: 10px;
+            height: 10px;
+            background: yellow;
+            transform: rotate(45deg);
+        }
+        @keyframes float {
+            0% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(-20px); opacity: 0.8; }
+            100% { transform: translateY(-40px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Happy 25th Anniversary</h1>
+        <p>"25 years of love, laughter, and countless beautiful memories—cheers to a lifetime more!"</p>
+    </div>
+    <canvas class="fireworks"></canvas>
+    <script>
+        function createEffect(type) {
+            const element = document.createElement('div');
+            element.classList.add(type);
+            if (type === 'heart') element.innerHTML = '❤️';
+            document.body.appendChild(element);
+            element.style.left = Math.random() * window.innerWidth + 'px';
+            element.style.top = Math.random() * window.innerHeight + 'px';
+            setTimeout(() => { element.remove(); }, 3000);
+        }
+        setInterval(() => createEffect('heart'), 500);
+        setInterval(() => createEffect('confetti'), 700);
+
+        const canvas = document.querySelector('.fireworks');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function createFirework(x, y) {
+            let particles = [];
+            for (let i = 0; i < 40; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    angle: Math.random() * Math.PI * 2,
+                    speed: Math.random() * 5 + 1,
+                    alpha: 1
+                });
+            }
+            return particles;
+        }
+
+        let fireworks = [];
+        function updateFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fireworks.forEach((fw, index) => {
+                fw.forEach(particle => {
+                    particle.x += Math.cos(particle.angle) * particle.speed;
+                    particle.y += Math.sin(particle.angle) * particle.speed;
+                    particle.alpha -= 0.02;
+                    ctx.fillStyle = `rgba(255, 255, 0, ${particle.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                fireworks[index] = fw.filter(p => p.alpha > 0);
+            });
+            fireworks = fireworks.filter(fw => fw.length > 0);
+            requestAnimationFrame(updateFireworks);
+        }
+        document.addEventListener('click', (e) => {
+            fireworks.push(createFirework(e.clientX, e.clientY));
+        });
+        updateFireworks();
+    </script>
+</body>
+</html>
